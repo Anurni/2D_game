@@ -14,18 +14,39 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))  # screen dimensions
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
+
     def run_game(self):
         """Start the main loop for the game."""
-        while True:
-            # Watch for keyboard and mouse events.
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-            self.screen.fill(self.settings.background_color)   # background color
-            self.ship.blitme()
+        while True: # Watch for keyboard and mouse events.
+            self._check_events()  
+            self.ship.update()   # update the ship's position on the screen
+            self._update_screen()
+            
+    def _check_events(self):   # a helper method, which isn't meant to be called through an instance
+        """Respond to keypresses and mouse events."""
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:    # defining what happens on KEYDOWN
+                if event.key == pygame.K_RIGHT:
+                    #move the ship to the right
+                    self.ship.moving_right = True
+                elif event.key == pygame.K_LEFT:  
+                    self.ship.moving_left = True
 
-            # Make the most recently drawn screen visible.
-            pygame.display.flip()
+            elif event.type == pygame.KEYUP:    # defining what happens on KEYUP
+                if event.key == pygame.K_RIGHT:
+                    self.ship.moving_right = False
+                elif event.key == pygame.K_LEFT:
+                    self.ship.moving_left = False
+
+    def _update_screen(self):     # a helper method, which isn't meant to be called through an instance
+        """Update images on the screen, and flip to the new screen."""       
+        self.screen.fill(self.settings.background_color)   # background color
+        self.ship.blitme()
+
+        # Make the most recently drawn screen visible.
+        pygame.display.flip()
 
 
 if __name__ == "__main__":
